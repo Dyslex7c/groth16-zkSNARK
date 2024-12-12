@@ -1,8 +1,8 @@
 #[cfg(test)]
 mod tests {
-    use ark_relations::r1cs::{ConstraintSynthesizer};
-    use grothprotocol::circuit::Circuit;
-    use ark_bls12_381::Fr; // use a specific finite field
+    use ark_bls12_381::Fr;
+    use ark_relations::r1cs::ConstraintSynthesizer;
+    use grothprotocol::circuit::Circuit; // use a specific finite field
 
     #[test]
     fn test_circuit_constraints() {
