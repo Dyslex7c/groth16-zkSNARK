@@ -1,11 +1,9 @@
-use ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
-use ark_ec::{
-    pairing::Pairing, 
-    AffineRepr, 
-    CurveGroup,
-};
-use ark_ff::{Field, Zero, One};
-use ark_std::rand::{RngCore, CryptoRng};
+use ark_bls12_381::{Fr, G1Affine, G2Affine};
+use ark_ec::AffineRepr;
+use ark_ff::UniformRand;
+use ark_std::rand::{CryptoRng, RngCore};
+use rand_chacha::ChaCha20Rng;
+use rand_core::SeedableRng;
 
 #[derive(Clone)]
 pub struct ProvingKey {
@@ -30,26 +28,26 @@ pub struct VerificationKey {
 }
 
 pub fn generate_toxic_waste<R: RngCore + CryptoRng>(rng: &mut R) -> (Fr, Fr, Fr, Fr) {
-    (
-        Fr::random(rng),
-        Fr::random(rng),
-        Fr::random(rng),
-        Fr::random(rng),
-    )
+    (Fr::rand(rng), Fr::rand(rng), Fr::rand(rng), Fr::rand(rng))
 }
 
-pub fn setup_phase1(num_inputs: usize, num_variables: usize, constraints: Vec<(usize, usize, usize)>) -> Result<(ProvingKey, VerificationKey), String> {
+pub fn setup_phase1(
+    num_inputs: usize,
+    num_variables: usize,
+    constraints: Vec<(usize, usize, usize)>,
+) -> Result<(ProvingKey, VerificationKey), String> {
     let g1_generator = G1Affine::generator();
     let g2_generator = G2Affine::generator();
 
-    let mut rng = ark_std::test_rng();
+    let seed = [42u8; 32];
+    let mut rng = ChaCha20Rng::from_seed(seed);
     let (alpha, beta, gamma, delta) = generate_toxic_waste(&mut rng);
 
     let alpha_g1 = (g1_generator * alpha).into();
     let beta_g1 = (g1_generator * beta).into();
     let gamma_g1 = (g1_generator * gamma).into();
     let delta_g1 = (g1_generator * delta).into();
-    
+
     let alpha_g2 = (g2_generator * alpha).into();
     let beta_g2 = (g2_generator * beta).into();
     let gamma_g2 = (g2_generator * gamma).into();
@@ -89,7 +87,7 @@ pub fn setup_phase2(
     verification_key: &mut VerificationKey,
     num_inputs: usize,
     num_variables: usize,
-    constraints: Vec<(usize, usize, usize)>
+    constraints: Vec<(usize, usize, usize)>,
 ) -> Result<(), String> {
     if num_inputs != 1 {
         return Err("Invalid number of inputs".to_string());
@@ -112,7 +110,7 @@ pub fn setup_phase2(
     let g2_generator = G2Affine::generator();
 
     let mut rng = ark_std::test_rng();
-    let (tau, x) = (Fr::random(&mut rng), Fr::random(&mut rng));
+    let (tau, x) = (Fr::rand(&mut rng), Fr::rand(&mut rng));
 
     proving_key.a1 = (g1_generator * tau).into();
     proving_key.b2 = (g2_generator * tau).into();
