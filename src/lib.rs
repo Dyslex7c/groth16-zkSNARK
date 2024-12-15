@@ -1,5 +1,6 @@
 pub mod circuit;
 pub mod keygen;
+pub mod prover;
 
 pub fn add(left: u64, right: u64) -> u64 {
     left + right
