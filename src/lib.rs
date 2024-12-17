@@ -1,18 +1,11 @@
 pub mod circuit;
 pub mod keygen;
 pub mod prover;
+pub mod verifier;
 
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+pub use keygen::{ProvingKey, VerificationKey};
+pub use prover::Proof;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+pub use ark_bls12_381::{Fr, G1Affine, G2Affine};
+pub use ark_ec::{AffineRepr, CurveGroup};
+pub use ark_ff::Field;
